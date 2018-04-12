@@ -135,8 +135,8 @@ namespace pjson
    struct pool_allocator
    {
       inline pool_allocator(uint initial_size = 0, uint min_chunk_size = PJSON_DEFAULT_MIN_CHUNK_SIZE, size_t max_bytes_to_preserve_across_resets = PJSON_DEFAULT_MAX_BYTES_TO_PRESERVE_ACROSS_RESETS) : 
-         m_pActive_chunks(NULL), 
-         m_pFree_chunks(NULL),
+         m_pActive_chunks(nullptr),
+         m_pFree_chunks(nullptr),
          m_total_free_bytes(0),
          m_initial_size(initial_size), 
          m_min_chunk_size(min_chunk_size),
@@ -146,7 +146,7 @@ namespace pjson
          if (initial_size)
          {
             m_pActive_chunks = static_cast<chunk*>(pjson_malloc(sizeof(chunk) + initial_size));
-            m_pActive_chunks->m_pNext = NULL;
+            m_pActive_chunks->m_pNext = nullptr;
             m_pActive_chunks->m_ofs = 0;
             m_pActive_chunks->m_size = initial_size;
          }
@@ -161,10 +161,10 @@ namespace pjson
       void clear()
       {
          free_chunk_chain(m_pActive_chunks);
-         m_pActive_chunks = NULL;
+         m_pActive_chunks = nullptr;
          
          free_chunk_chain(m_pFree_chunks);
-         m_pFree_chunks = NULL;
+         m_pFree_chunks = nullptr;
 
          m_total_free_bytes = 0;
          
@@ -240,12 +240,12 @@ namespace pjson
             {
                PJSON_ASSERT(m_pActive_chunks->m_ofs >= (cur_size - new_size));
                m_pActive_chunks->m_ofs -= (cur_size - new_size);
-               return new_size ? p : NULL;
+               return new_size ? p : nullptr;
             }
          }
 
          if (!new_size)
-            return NULL;
+            return nullptr;
 
          void* pNew_block = Alloc(new_size);
          memcpy(pNew_block, p, cur_size);
@@ -271,7 +271,7 @@ namespace pjson
          pCur_active_tail->m_pNext = m_pFree_chunks;
                            
          m_pFree_chunks = m_pActive_chunks;
-         m_pActive_chunks = NULL;
+         m_pActive_chunks = nullptr;
 
          m_total_free_bytes += total_allocated_bytes;
          while (m_total_free_bytes > m_max_to_preserve_across_resets)
@@ -401,12 +401,12 @@ namespace pjson
       inline simple_vector(const simple_vector& other, pool_allocator& alloc) { construct(other, alloc); }
             
       // Manual constructor methods
-      inline void construct() { this->m_p = NULL; this->m_size = 0; }
+      inline void construct() { this->m_p = nullptr; this->m_size = 0; }
       inline void construct(uint size, pool_allocator& alloc) { construct(); enlarge(size, alloc, false); }
       inline void construct(const T* p, uint size, pool_allocator& alloc)
       { 
          this->m_size = size;
-         this->m_p = NULL;
+         this->m_p = nullptr;
          if (size)
          {
             uint num_bytes = sizeof(T) * size;
@@ -440,7 +440,7 @@ namespace pjson
       inline const T* get_ptr(const T* pDef) const   { return this->m_p ? this->m_p : pDef; }
       inline       T* get_ptr(T* pDef)               { return this->m_p ? this->m_p : pDef; }
 
-      inline void clear() { this->m_p = NULL; this->m_size = 0; }
+      inline void clear() { this->m_p = nullptr; this->m_size = 0; }
                   
       inline void resize(uint new_size, pool_allocator& alloc)
       {
@@ -944,8 +944,8 @@ namespace pjson
       // Returns value as a string, or the default string if the value cannot be converted. 
       inline string_t as_string(const char* pDef = "") const { string_t result; get_string_value(result, pDef); return result; }
 
-      // Returns pointer to null terminated string or NULL if the value is not a string.
-      inline const char* as_string_ptr() const { return is_string() ? get_string_ptr() : NULL; }
+      // Returns pointer to null terminated string or nullptr if the value is not a string.
+      inline const char* as_string_ptr() const { return is_string() ? get_string_ptr() : nullptr; }
 
       inline void swap(value_variant& other)
       {
@@ -962,7 +962,7 @@ namespace pjson
          int index = find_key(pName);
          if ((index >= 0) && (get_object()[index].get_value().is_array()))
             return &get_object()[index].get_value();
-         return NULL;
+         return nullptr;
       }
 
       inline const value_variant *find_child_object(const char *pName) const
@@ -970,13 +970,13 @@ namespace pjson
          int index = find_key(pName);
          if ((index >= 0) && (get_object()[index].get_value().is_object()))
             return &get_object()[index].get_value();
-         return NULL;
+         return nullptr;
       }
 
       inline const value_variant *find_value_variant(const char *pName) const
       {
          int index = find_key(pName);
-         return (index < 0) ? NULL : &get_object()[index].get_value();
+         return (index < 0) ? nullptr : &get_object()[index].get_value();
       }
 
       inline int find_key(const char *pName) const
@@ -1124,7 +1124,7 @@ namespace pjson
          return *this;
       }
       
-      bool serialize(char* pBuf, size_t buf_size, size_t* pSize = NULL, bool formatted = true, bool null_terminate = true) const
+      bool serialize(char* pBuf, size_t buf_size, size_t* pSize = nullptr, bool formatted = true, bool null_terminate = true) const
       {
          serialize_helper<char_buf_print_helper> helper(pBuf, buf_size);
          serialize_internal(helper, formatted, null_terminate, 0);
@@ -1343,7 +1343,7 @@ namespace pjson
                char* pDst = pBuf;
                int64 n = m_data.m_nVal;
                
-               uint64 s = static_cast<uint64>(n >> 63);
+               auto s = static_cast<uint64>(n >> 63);
                *pDst = '-';
                pDst -= s;
                n = (n ^ s) - s;
@@ -1539,7 +1539,7 @@ namespace pjson
    class error_info
    {
    public:
-      inline error_info() : m_ofs(0), m_pError_message(NULL) { }
+      inline error_info() : m_ofs(0), m_pError_message(nullptr) { }
       inline void set(size_t ofs, const char* pMsg) { m_ofs = ofs; m_pError_message = pMsg; }
 
       size_t m_ofs;
@@ -1552,7 +1552,7 @@ namespace pjson
    {
    public:
       inline growable_stack(uint initial_size) : 
-         m_pBuf(NULL),
+         m_pBuf(nullptr),
          m_size(initial_size),
          m_ofs(0)
       {
@@ -1568,7 +1568,7 @@ namespace pjson
       inline void clear()
       {
          pjson_free(m_pBuf);
-         m_pBuf = NULL;
+         m_pBuf = nullptr;
          m_size = 0;
          m_ofs = 0;
       }
@@ -1805,12 +1805,12 @@ namespace pjson
                   value_variant* pCur_variant = m_stack.get_top_obj<value_variant>();
 
                   value_variant_vec_t& arr = pCur_variant->get_array();
-                  cur_is_object = (arr.m_p != NULL);
+                  cur_is_object = (arr.m_p != nullptr);
                   cur_end_char = cur_is_object ? '}' : ']';
                   cur_num_elements = arr.m_size;
                   
                   arr.m_size = n;
-                  arr.m_p = NULL;
+                  arr.m_p = nullptr;
                   if (num_bytes)
                      memcpy(arr.m_p = static_cast<value_variant*>(m_allocator.Alloc(num_bytes)), pSrc, num_bytes);
                   
