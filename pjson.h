@@ -2089,15 +2089,22 @@ namespace pjson
 
                   break;
                }
-               case 'n': 
+              case 'n':
+              case 'N':
                {
-                  if ((pStr[1] == 'u') && (pStr[2] == 'l') && (pStr[3] == 'l'))
+                  if ((m_pEnd - pStr >= 4) && (pStr[1] == 'u') && (pStr[2] == 'l') && (pStr[3] == 'l'))
                   {
-                     pStr += 4; PJSON_UPDATE_STAT(m_num_bool_chars, 4); 
+                     pStr += 4; PJSON_UPDATE_STAT(m_num_bool_chars, 4);
                      pChild_variant->construct(cJSONValueTypeNull);
                   }
-                  else
-                     return set_error(pStr, "Unrecognized character");
+                  else if ((m_pEnd - pStr >= 3) && (pStr[1] == 'a') && (pStr[2] == 'n' || pStr[2] == 'N' ))
+                  {
+                    pStr += 3; PJSON_UPDATE_STAT(m_num_bool_chars, 3);
+                    pChild_variant->construct(cJSONValueTypeDouble);
+                    pChild_variant->m_data.m_flVal = std::numeric_limits<double>::quiet_NaN();
+                  } else {
+                     return set_error(pStr, "Premature end of data or unrecognized character");
+                  }
                   break;
                }
                case 't':
