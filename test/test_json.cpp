@@ -1,8 +1,6 @@
 #include "../pjson.h"
 
-#include <iostream>
-#include <string>
-#include <vector>
+#include <cmath>
 
 #include "catch.hpp"
 
@@ -11,18 +9,61 @@ TEST_CASE("Parse a JSON string")
   char s[] = R"(
     {
       "x": 1,
-      "y": 2
+      "y": 2,
+      "a": [5.0, 6],
+      "infinity": Inf,
+      "infinity2": inf
     }
   )";
 
   pjson::document doc;
-  doc.deserialize_in_place(s);
+  doc.deserialize_in_place(s, strlen(s));
 
   REQUIRE(doc.is_object());
 
   REQUIRE(doc.find_key("x") == 0);
+  REQUIRE(doc.get_value_at_index(0).is_numeric());
+  REQUIRE(doc.get_value_at_index(0).as_int64(-1) == 1);
   REQUIRE(doc.find_key("y") == 1);
-  REQUIRE(doc.find_key("a") == -1);
+  REQUIRE(doc.find_key("a") == 2);
+
+  const auto& v = doc.get_value_at_index(2);
+  REQUIRE(v.is_array());
+
+  REQUIRE(std::isinf(doc.get_value_at_index(3).as_double()));
+  REQUIRE(std::isinf(doc.get_value_at_index(4).as_double()));
+}
+
+TEST_CASE("Parse a JSON array with nan")
+{
+  char s[] = R"([nan])";
+
+  pjson::document doc;
+  REQUIRE(doc.deserialize_in_place(s, strlen(s)));
+  REQUIRE(doc.is_array());
+  REQUIRE(doc.get_value_at_index(0).is_double());
+  REQUIRE(std::isnan(doc.get_value_at_index(0).as_double()));
+}
+
+TEST_CASE("Parse a JSON array with NaN")
+{
+  char s[] = "[NaN]";
+
+  pjson::document doc;
+  REQUIRE(doc.deserialize_in_place(s, strlen(s)));
+  REQUIRE(doc.is_array());
+  REQUIRE(doc.get_value_at_index(0).is_double());
+  REQUIRE(std::isnan(doc.get_value_at_index(0).as_double()));
+
+}
+
+TEST_CASE("Parse a JSON array with too short string ('n')")
+{
+  char s[] = "[N]";
+
+  pjson::document doc;
+  REQUIRE_FALSE(doc.deserialize_in_place(s, strlen(s)));
+  REQUIRE(doc.get_error_location() == 1);
 }
 
 TEST_CASE("Create a JSON doc")
