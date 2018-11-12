@@ -2109,25 +2109,25 @@ namespace pjson
                }
                case 't':
                {
-                  if ((pStr[1] == 'r') && (pStr[2] == 'u') && (pStr[3] == 'e'))
+                  if ((m_pEnd - pStr >= 4) && (pStr[1] == 'r') && (pStr[2] == 'u') && (pStr[3] == 'e'))
                   {
                      pStr += 4; PJSON_UPDATE_STAT(m_num_bool_chars, 4); 
                      pChild_variant->construct(cJSONValueTypeBool);
                      pChild_variant->m_data.m_nVal = 1;
                   }
                   else
-                     return set_error(pStr, "Unrecognized character");
+                     return set_error(pStr, "Premature end of data or unrecognized character");
                   break;
                }
                case 'f':
                {
-                  if ((pStr[1] == 'a') && (pStr[2] == 'l') && (pStr[3] == 's') && (pStr[4] == 'e'))
+                  if ((m_pEnd - pStr >= 5) && (pStr[1] == 'a') && (pStr[2] == 'l') && (pStr[3] == 's') && (pStr[4] == 'e'))
                   {
                      pStr += 5; PJSON_UPDATE_STAT(m_num_bool_chars, 5); 
                      pChild_variant->construct(cJSONValueTypeBool);
                   }
                   else
-                     return set_error(pStr, "Unrecognized character");
+                     return set_error(pStr, "Premature end of data or unrecognized character");
                   break;
                }
                case '0': case '1': case '2': case '3': case '4': case '5':
