@@ -2089,6 +2089,20 @@ namespace pjson
 
                   break;
                }
+
+              case 'i':
+              case 'I':
+              {
+                 if ((m_pEnd - pStr >= 3) && (pStr[1] == 'n') && (pStr[2] == 'f')) {
+                    pStr += 3; PJSON_UPDATE_STAT(m_num_bool_chars, 3);
+                    pChild_variant->construct(cJSONValueTypeDouble);
+                    pChild_variant->m_data.m_flVal = std::numeric_limits<double>::infinity();
+                 } else {
+                    return set_error(pStr, "Premature end of data or unrecognized character");
+                 }
+                 break;
+              }
+
               case 'n':
               case 'N':
                {
@@ -2107,6 +2121,7 @@ namespace pjson
                   }
                   break;
                }
+
                case 't':
                {
                   if ((m_pEnd - pStr >= 4) && (pStr[1] == 'r') && (pStr[2] == 'u') && (pStr[3] == 'e'))
