@@ -1656,6 +1656,19 @@ namespace pjson
       }
       
       bool deserialize_in_place(char* pStr)
+
+      bool has_error() {
+         return m_error_info.m_ofs != 0;
+      }
+
+      size_t get_error_location() {
+         return m_error_info.m_ofs;
+      }
+
+      const char* get_error_message() {
+         return m_error_info.m_pError_message;
+      }
+
       {
          return deserialize_start((uint8*)pStr);
       }
