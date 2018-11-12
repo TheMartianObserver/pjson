@@ -1654,8 +1654,6 @@ namespace pjson
          m_parse_stats.clear();
 #endif
       }
-      
-      bool deserialize_in_place(char* pStr)
 
       bool has_error() {
          return m_error_info.m_ofs != 0;
@@ -1669,8 +1667,9 @@ namespace pjson
          return m_error_info.m_pError_message;
       }
 
+      bool deserialize_in_place(const char* pStr, size_t len)
       {
-         return deserialize_start((uint8*)pStr);
+         return deserialize_start((const uint8*)pStr, len);
       }
       
 #if PJSON_PARSE_STATS      
@@ -1699,6 +1698,7 @@ namespace pjson
       growable_stack m_stack;
       error_info m_error_info;
       const uint8* m_pStart;
+      const uint8* m_pEnd;
       const uint8* m_pStr;
       
       inline bool set_error(const uint8* pStr, const char* pMsg) 
@@ -2269,7 +2269,7 @@ namespace pjson
          } 
       }
 
-      bool deserialize_start(uint8* pStr)
+      bool deserialize_start(const uint8* pStr, size_t len)
       {
          set_to_null();
 
@@ -2280,6 +2280,7 @@ namespace pjson
          m_allocator.reset();
 
          m_pStart = pStr;
+         m_pEnd = pStr + len;
          
          m_pStr = skip_whitespace(pStr);
          
