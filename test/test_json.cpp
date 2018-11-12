@@ -10,15 +10,40 @@ TEST_CASE("Parse a JSON string")
 {
   char s[] = R"(
     {
-      "x": 1
+      "x": 1,
+      "y": 2
     }
   )";
 
   pjson::document doc;
   doc.deserialize_in_place(s);
 
-  REQUIRE(doc.find_key("x") == 1);
+  REQUIRE(doc.is_object());
+
+  REQUIRE(doc.find_key("x") == 0);
+  REQUIRE(doc.find_key("y") == 1);
+  REQUIRE(doc.find_key("a") == -1);
 }
+
+TEST_CASE("Create a JSON doc")
+{
+  pjson::document doc;
+  doc.set_to_object();
+  doc.add_key_value("x", 1, doc.get_allocator());
+  doc.add_key_value("y", 2, doc.get_allocator());
+
+  REQUIRE(doc.find_key("x") == 0);
+  REQUIRE(doc.find_key("y") == 1);
+  REQUIRE(doc.find_key("a") == -1);
+
+
+  auto variant = doc.find_value_variant("x");
+
+  REQUIRE(variant != nullptr);
+
+}
+
+
 
 #if 0
 
