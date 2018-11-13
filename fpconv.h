@@ -1,6 +1,10 @@
 #ifndef FPCONV_H
 #define FPCONV_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Fast and accurate double to string conversion based on Florian Loitsch's
  * Grisu-algorithm[1].
  *
@@ -27,6 +31,10 @@
  */
 
 int fpconv_dtoa(double fp, char dest[24]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
