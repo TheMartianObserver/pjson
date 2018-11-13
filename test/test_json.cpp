@@ -1,6 +1,7 @@
 #include "../pjson.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "catch.hpp"
 
@@ -71,7 +72,7 @@ TEST_CASE("Create a JSON doc")
   pjson::document doc;
   doc.set_to_object();
   doc.add_key_value("x", 1, doc.get_allocator());
-  doc.add_key_value("y", 2, doc.get_allocator());
+  doc.add_key_value("y", 2.4, doc.get_allocator());
 
   REQUIRE(doc.find_key("x") == 0);
   REQUIRE(doc.find_key("y") == 1);
@@ -82,9 +83,16 @@ TEST_CASE("Create a JSON doc")
 
   REQUIRE(variant != nullptr);
 
+  pjson::char_vec_t charv;
+  doc.serialize(charv, false);
+
+  const char* output = charv.data();
+
+  CAPTURE(output);
+  int string_comp_result = strcmp(output, "{\"x\":1,\"y\":2.4}");
+
+  REQUIRE(string_comp_result == 0);
 }
-
-
 
 #if 0
 
