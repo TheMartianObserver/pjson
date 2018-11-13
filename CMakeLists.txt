@@ -25,4 +25,4 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 endif()
 
-add_executable(runtests pjson.h test/test_main.cpp test/test_json.cpp)
+add_executable(runtests pjson.h fpconv.c test/test_main.cpp test/test_json.cpp)
