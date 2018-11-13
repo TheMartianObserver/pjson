@@ -1368,7 +1368,9 @@ namespace pjson
             }
             case cJSONValueTypeDouble:
             {
-               return 0 == fpconv_dtoa(m_data.m_flVal, pBuf);
+               int strLength = fpconv_dtoa(m_data.m_flVal, pBuf);
+               pBuf[strLength] = '\0';
+               return true;
             }
            default:
            {
