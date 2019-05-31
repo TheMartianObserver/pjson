@@ -13,12 +13,18 @@ TEST_CASE("Parse a JSON string")
       "y": 2,
       "a": [5.0, 6],
       "infinity": Inf,
-      "infinity2": inf
+      "infinity2": inf,
+      "infinity3": +inf,
+      "nan1": nan,
+      "nan2": NaN,
+      "nan3": +NaN,
+      "nan4": +nan,
+      "infinity4": +Inf
     }
   )";
 
   pjson::document doc;
-  doc.deserialize_in_place(s, strlen(s));
+  REQUIRE(doc.deserialize_in_place(s, strlen(s)));
 
   REQUIRE(doc.is_object());
 
@@ -33,6 +39,12 @@ TEST_CASE("Parse a JSON string")
 
   REQUIRE(std::isinf(doc.get_value_at_index(3).as_double()));
   REQUIRE(std::isinf(doc.get_value_at_index(4).as_double()));
+  REQUIRE(std::isinf(doc.get_value_at_index(5).as_double()));
+  REQUIRE(std::isnan(doc.get_value_at_index(6).as_double()));
+  REQUIRE(std::isnan(doc.get_value_at_index(7).as_double()));
+  REQUIRE(std::isnan(doc.get_value_at_index(8).as_double()));
+  REQUIRE(std::isnan(doc.get_value_at_index(9).as_double()));
+  REQUIRE(std::isinf(doc.get_value_at_index(10).as_double()));
 }
 
 TEST_CASE("Parse a JSON array with nan")
@@ -73,10 +85,14 @@ TEST_CASE("Create a JSON doc")
   doc.set_to_object();
   doc.add_key_value("x", 1, doc.get_allocator());
   doc.add_key_value("y", 2.4, doc.get_allocator());
+  doc.add_key_value("i", std::numeric_limits<double>::infinity(), doc.get_allocator());
+  doc.add_key_value("n", std::numeric_limits<double>::quiet_NaN(), doc.get_allocator());
 
   REQUIRE(doc.find_key("x") == 0);
   REQUIRE(doc.find_key("y") == 1);
   REQUIRE(doc.find_key("a") == -1);
+  REQUIRE(doc.find_key("i") == 2);
+  REQUIRE(doc.find_key("n") == 3);
 
 
   auto variant = doc.find_value_variant("x");
@@ -89,7 +105,7 @@ TEST_CASE("Create a JSON doc")
   const char* output = charv.data();
 
   CAPTURE(output);
-  int string_comp_result = strcmp(output, "{\"x\":1,\"y\":2.4}");
+  int string_comp_result = strcmp(output, "{\"x\":1,\"y\":2.4,\"i\":inf,\"n\":nan}");
 
   REQUIRE(string_comp_result == 0);
 }
