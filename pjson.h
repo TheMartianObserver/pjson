@@ -2096,7 +2096,7 @@ namespace pjson
               case 'I':
               {
                  if ((m_pEnd - pStr >= 3) && (pStr[1] == 'n') && (pStr[2] == 'f')) {
-                    pStr += 3; PJSON_UPDATE_STAT(m_num_bool_chars, 3);
+                    pStr += 3; PJSON_UPDATE_STAT(m_num_numeric_chars, 3);
                     pChild_variant->construct(cJSONValueTypeDouble);
                     pChild_variant->m_data.m_flVal = std::numeric_limits<double>::infinity();
                  } else {
@@ -2115,7 +2115,7 @@ namespace pjson
                   }
                   else if ((m_pEnd - pStr >= 3) && (pStr[1] == 'a') && (pStr[2] == 'n' || pStr[2] == 'N' ))
                   {
-                    pStr += 3; PJSON_UPDATE_STAT(m_num_bool_chars, 3);
+                    pStr += 3; PJSON_UPDATE_STAT(m_num_numeric_chars, 3);
                     pChild_variant->construct(cJSONValueTypeDouble);
                     pChild_variant->m_data.m_flVal = std::numeric_limits<double>::quiet_NaN();
                   } else {
@@ -2147,6 +2147,25 @@ namespace pjson
                      return set_error(pStr, "Premature end of data or unrecognized character");
                   break;
                }
+
+               case '+':
+               {
+                  if ((m_pEnd - pStr >= 4) && ((pStr[1] == 'i' || pStr[1] == 'I') && (pStr[2] == 'n') && (pStr[3] == 'f'))) {
+                    pStr += 4; PJSON_UPDATE_STAT(m_num_numeric_chars, 4);
+                    pChild_variant->construct(cJSONValueTypeDouble);
+                    pChild_variant->m_data.m_flVal = std::numeric_limits<double>::infinity();
+                    break;
+                  } else if ((m_pEnd - pStr >= 4) && ((pStr[1] == 'N' || pStr[1] == 'n') && (pStr[2] == 'a') && (pStr[3] == 'N' || pStr[3] == 'n'))) {
+                    pStr += 4; PJSON_UPDATE_STAT(m_num_numeric_chars, 4);
+                    pChild_variant->construct(cJSONValueTypeDouble);
+                    pChild_variant->m_data.m_flVal = std::numeric_limits<double>::quiet_NaN();
+                    break;
+                  } else {
+                     // fallthrough to numbers
+                     pStr += 1;
+                  }
+               }
+
                case '0': case '1': case '2': case '3': case '4': case '5':
                case '6': case '7': case '8': case '9': case '-': case '.':
                {
