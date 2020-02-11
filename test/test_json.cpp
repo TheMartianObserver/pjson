@@ -1,7 +1,6 @@
-#include "../pjson.h"
+#include "../pjson.hpp"
 
 #include <cmath>
-#include <iostream>
 
 #include "catch.hpp"
 

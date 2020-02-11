@@ -2,10 +2,6 @@
 #ifndef PURPLE_JSON_H
 #define PURPLE_JSON_H
 
-#ifdef WIN32
-#pragma once
-#endif
-
 #include "fpconv.h"
 
 #include <string>
